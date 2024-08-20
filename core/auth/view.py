@@ -1,4 +1,6 @@
-from flask import Blueprint
+from flask import Blueprint,render_template,request
+from .form import RegisterForm
+from .utils import RegisterAuth
 
 bp = Blueprint(
     name="auth",
@@ -7,6 +9,11 @@ bp = Blueprint(
 )
 
 
-@bp.route("/",methods={"GET","POST"})
+@bp.route("/register/",methods={"GET","POST"})
 def register():
-    return ""
+    if request.method == "POST":
+        form_data = request.form.to_dict()
+        RegisterAuth(form_data).main()
+    else:
+        form = RegisterForm()
+        return render_template("auth/register.html",form = form)

@@ -1,13 +1,20 @@
 from flask import Flask,Response
 from os import makedirs
+from instance.config import setting
 
 
-def create_app():
+def create_app(config = setting):
     app = Flask(
         import_name=__name__,
         template_folder="templates",
         static_folder="static"
     )
+    
+    app.config.from_object(config)
+
+    from core.system_db.utils import init_db
+
+    app.cli.add_command(init_db)
 
     try:
         makedirs(app.instance_path)
