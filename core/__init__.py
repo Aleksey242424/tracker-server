@@ -23,8 +23,10 @@ def create_app(config = setting):
         pass
 
     from core.auth.view import bp as auth_bp
+    from core.tracker.view import bp as tracker_bp
 
     app.register_blueprint(auth_bp)
+    app.register_blueprint(tracker_bp)
 
     @app.after_request
     def add_security_headers(response:Response):

@@ -6,11 +6,23 @@ CREATE TABLE IF NOT EXISTS person(
     is_owner BOOLEAN NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS connect_token(
+CREATE TABLE IF NOT EXISTS project(
+    token UUID UNIQUE NOT NULL,
+    title VARCHAR(40) NOT NULL,
+    "description" VARCHAR(800) NOT NULL,
+    "owner" INTEGER NOT NULL,
+    FOREIGN KEY("owner") REFERENCES person(id)
+    ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS "connect"(
     id SERIAL PRIMARY KEY,
-    owner_id INTEGER UNIQUE NOT NULL,
-    token TEXT UNIQUE NOT NULL,
-    FOREIGN KEY (owner_id) REFERENCES person(id)
+    person_id INTEGER NOT NULL,
+    token_project UUID NOT NULL,
+    tracker_info INTEGER UNIQUE NOT NULL,
+    FOREIGN KEY (person_id) REFERENCES person(id)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (token_project) REFERENCES project(token)
     ON DELETE CASCADE ON UPDATE CASCADE
 );
 

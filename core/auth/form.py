@@ -26,7 +26,7 @@ class RegisterForm(FlaskForm):
         label="confirm_password",
         validators=[EqualTo('password')],
         render_kw={
-            "placeholder":"password",
+            "placeholder":"confirm password",
             "id":"password",
             "class":"password"
             }
@@ -50,3 +50,25 @@ class RegisterForm(FlaskForm):
     )
 
     sign_up = SubmitField(label="sign up")
+
+
+class LoginForm(FlaskForm):
+    name = StringField(
+        label="name",
+        validators=[DataRequired(),Length(3,40)],
+        render_kw={
+            "placeholder":"username",
+            "id":"name",
+            "class":"name"
+        }
+    )
+    password = PasswordField(
+        label="password",
+        validators=[DataRequired(),Length(6,20)],
+        render_kw={
+            "placeholder":"password",
+            "id":"password",
+            "class":"password"
+            }
+    )
+    sign_in = SubmitField(label="sign in")

@@ -1,4 +1,5 @@
-from flask import Blueprint
+from flask import Blueprint,session
+from core.auth.utils import jwt_decode
 
 bp = Blueprint(
     name="tracker",
@@ -9,4 +10,7 @@ bp = Blueprint(
 
 @bp.route("/",methods={"GET","POST"})
 def main():
-    return ""
+    token = session["auth"]
+    user = jwt_decode(token)
+    return user["name"]
+

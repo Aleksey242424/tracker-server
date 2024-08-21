@@ -27,6 +27,7 @@ class PersonCRUD:
                 db_session.commit()
             
             except UniqueViolation:
+                db_session.rollback()
                 abort(401)
 
     @staticmethod
