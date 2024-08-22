@@ -9,7 +9,9 @@ bp = Blueprint(
     url_prefix="/auth"
 )
 
-
+@bp.before_request
+def check_failed_login():
+    print(request.args)
 
 @bp.route("/register/",methods={"GET","POST"})
 @check_auth
@@ -30,4 +32,6 @@ def login():
         return LoginAuth(form_data=form_data).main()
     else:
         form = LoginForm()
-        return render_template("auth/login.html",form=form)
+        return render_template("auth/login.html",form=form)\
+        
+

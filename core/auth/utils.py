@@ -15,7 +15,7 @@ def jwt_encode(
     private_key:str = setting.private_key.read_text()
 ):
     payload["sub"] = payload["name"]
-    payload["exp"] = datetime.utcnow() + timedelta(seconds=10)
+    payload["exp"] = datetime.utcnow() + timedelta(minutes=10)
     return encode(
         payload=payload,
         key=private_key,
@@ -35,16 +35,26 @@ def jwt_decode(
             algorithms=[algorithm]
         )
     except (InvalidSignatureError,ExpiredSignatureError,DecodeError,ValueError):
+        del session["auth"]
         abort(401)
 
 
 def check_auth(func):
     @wraps(func)
-    def decorator(*a,**kw):
+    def check(*a,**kw):
         if session.get("auth"):
             return redirect(url_for("tracker.main"))
         return func(*a,**kw)
-    return decorator
+    return check
+
+
+def login_required(func):
+    @wraps(func)
+    def required(*a,**kw):
+        if session.get("auth") is None:
+            return redirect(url_for("auth.login"))
+        return func(*a,**kw)
+    return required
 
 
 class BaseAuth(ABC):
@@ -77,7 +87,7 @@ class BaseAuth(ABC):
             return User(**form_data)
 
     @abstractmethod
-    def main(self):
+    def main(self) -> Response:
         ...
 
     def init_response(self,token:str):

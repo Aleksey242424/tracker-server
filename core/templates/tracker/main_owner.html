@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner</title>
+</head>
+<body>
+    <form action="{{url_for('tracker.owner')}}" method="post">
+        {{form.hidden_tag()}}
+        {{form.title}}
+        {{form.description}}
+        {{form.create}}
+    </form>
+</body>
+</html>

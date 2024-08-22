@@ -24,9 +24,13 @@ def create_app(config = setting):
 
     from core.auth.view import bp as auth_bp
     from core.tracker.view import bp as tracker_bp
+    from core.errors.error import bp as error_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(tracker_bp)
+    app.register_blueprint(error_bp)
+
+    app.add_url_rule("/","tracker.main")
 
     @app.after_request
     def add_security_headers(response:Response):

@@ -1,36 +1,35 @@
+CREATE TYPE POSITION_PERSON AS ENUM ('frontend', 'backend', 'fullstack');
+
 CREATE TABLE IF NOT EXISTS person(
     id SERIAL PRIMARY KEY,
     name VARCHAR(40) UNIQUE NOT NULL,
     hash_password TEXT NOT NULL,
     email VARCHAR(90) UNIQUE NOT NULL,
-    is_owner BOOLEAN NOT NULL
+    is_owner BOOLEAN NOT NULL,
+    position POSITION_PERSON DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS project(
+    id SERIAL PRIMARY KEY,
     token UUID UNIQUE NOT NULL,
     title VARCHAR(40) NOT NULL,
-    "description" VARCHAR(800) NOT NULL,
+    "description" VARCHAR(800),
     "owner" INTEGER NOT NULL,
     FOREIGN KEY("owner") REFERENCES person(id)
     ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS "connect"(
-    id SERIAL PRIMARY KEY,
-    person_id INTEGER NOT NULL,
-    token_project UUID NOT NULL,
-    tracker_info INTEGER UNIQUE NOT NULL,
-    FOREIGN KEY (person_id) REFERENCES person(id)
-    ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (token_project) REFERENCES project(token)
-    ON DELETE CASCADE ON UPDATE CASCADE
-);
 
 
 CREATE TABLE IF NOT EXISTS tracker_info(
     id SERIAL PRIMARY KEY,
     person_id INTEGER UNIQUE NOT NULL,
+    token_project UUID NOT NULL,
     "when" DATE NOT NULL,
     "start" TIMESTAMP NOT NULL,
-    "end" TIMESTAMP NOT NULL
+    "end" TIMESTAMP NOT NULL,
+    FOREIGN KEY (person_id) REFERENCES person(id)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (token_project) REFERENCES project(token)
+    ON DELETE CASCADE ON UPDATE CASCADE
 );
