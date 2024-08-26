@@ -1,0 +1,49 @@
+html,
+body{
+    margin:0;
+}
+a{
+    text-decoration: none;
+    color:black;
+}
+
+header{
+    display: flex;
+    justify-content: end;
+    padding:10px 30px;
+    font-size: 40px;
+}
+.circle{
+    border: solid 2px black;
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 150px;
+}
+.main{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding-top: 100px;
+}
+.empty{
+    color: #656565;
+    margin-top:40px;
+}
+.project-block{
+    font-size: 50px;
+    display: flex;
+    justify-content: space-between;
+    border: solid 2px black;
+    flex-wrap: wrap;
+    padding: 0 50px;
+    border-radius: 10px;
+}
+.project-block{
+    margin: 50px 20px;
+    width: 700px;
+}

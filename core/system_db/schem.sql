@@ -15,21 +15,30 @@ CREATE TABLE IF NOT EXISTS project(
     title VARCHAR(40) NOT NULL,
     "description" VARCHAR(800),
     "owner" INTEGER NOT NULL,
+    date_create DATE NOT NULL,
     FOREIGN KEY("owner") REFERENCES person(id)
     ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS tracker_link(
+    id SERIAL PRIMARY KEY,
+    token UUID UNIQUE NOT NULL,
+    worker INTEGER UNIQUE NOT NULL,
+    FOREIGN KEY (worker) REFERENCES person(id)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (token) REFERENCES project(token)
+    ON DELETE CASCADE ON UPDATE CASCADE
+);
 
 
 CREATE TABLE IF NOT EXISTS tracker_info(
     id SERIAL PRIMARY KEY,
-    person_id INTEGER UNIQUE NOT NULL,
-    token_project UUID NOT NULL,
+    person INTEGER UNIQUE NOT NULL,
+    token UUID NOT NULL,
     "when" DATE NOT NULL,
-    "start" TIMESTAMP NOT NULL,
-    "end" TIMESTAMP NOT NULL,
-    FOREIGN KEY (person_id) REFERENCES person(id)
+    "time" TIME,
+    FOREIGN KEY (person) REFERENCES person(id)
     ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (token_project) REFERENCES project(token)
+    FOREIGN KEY (token) REFERENCES project(token)
     ON DELETE CASCADE ON UPDATE CASCADE
 );

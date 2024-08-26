@@ -7,6 +7,7 @@ from datetime import timedelta,datetime
 from flask import abort,Response,make_response,redirect,url_for,session
 from core.system_db.crud import PersonCRUD
 from functools import wraps
+from pydantic import ValidationError
 
 
 def jwt_encode(
@@ -14,7 +15,7 @@ def jwt_encode(
     algorithm:str = setting.algorithm,
     private_key:str = setting.private_key.read_text()
 ):
-    payload["sub"] = payload["name"]
+    payload["sub"] = payload["id"]
     payload["exp"] = datetime.utcnow() + timedelta(minutes=10)
     return encode(
         payload=payload,
@@ -59,7 +60,7 @@ def login_required(func):
 
 class BaseAuth(ABC):
     def __init__(self,form_data:dict):
-        self.user = self.init_user(form_data=form_data)
+        self.user = self.init_user_by_form(form_data=form_data)
         self.hash_password = self.generate_hash_password(self.user.password.encode("utf-8")).decode("utf-8")
         self.person_crud = PersonCRUD
 
@@ -69,7 +70,7 @@ class BaseAuth(ABC):
             salt=salt
             )
     
-    def init_user(self,form_data:dict) -> User:
+    def init_user_by_form(self,form_data:dict) -> User:
         try:
             form_data.__delitem__("csrf_token")
             form_data.__delitem__("confirm_password")
@@ -100,15 +101,36 @@ class BaseAuth(ABC):
         response.headers["Authorization"] = f"Bearer {token}"
         return response
     
+    def init_user_by_data(self,name:str,password:str):
+        user_data = self.person_crud.get(
+            name=name,
+            password=password
+        )
+        try:
+            return User(
+            id=user_data[0],
+            name=user_data[1],
+            password=user_data[2],
+            email=user_data[3],
+            is_owner=user_data[4]
+            )
+        except ValidationError:
+            abort(401)   
+
+    
 
 class RegisterAuth(BaseAuth):
-
     def main(self) -> Response:
         self.person_crud.add(
             name=self.user.name,
             hash_password=self.hash_password,
             email = self.user.email,
             is_owner=self.user.is_owner
+        )
+
+        self.user = self.init_user_by_data(
+            name=self.user.name,
+            password = self.user.password
         )
 
         token = jwt_encode(
@@ -121,25 +143,14 @@ class RegisterAuth(BaseAuth):
 
 class LoginAuth(BaseAuth):
     def main(self) -> Response:
-        user_data = self.person_crud.get(
+        self.user = self.init_user_by_data(
             name=self.user.name,
             password=self.user.password
-        )
-
-        if not user_data:
-            abort(401)
-
-        user = self.init_user(
-            form_data={
-                "name":user_data[0],
-                "password":self.user.password,
-                "email":user_data[2],
-                "is_owner":user_data[3]
-            }
-        )
+            )
+            
 
         token = jwt_encode(
-            payload = user.model_dump()
+            payload = self.user.model_dump()
         )
         return self.init_response(
             token=token

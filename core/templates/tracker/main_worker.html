@@ -3,9 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/main_worker.css')}}">
     <title>Worker</title>
 </head>
 <body>
-    <a href="{{url_for('tracker.profile_worker')}}">profile</a>
+    <header>
+        <a href="{{url_for('tracker.profile_owner',id=id)}}">profile</a>
+    </header>
+    <div class="main">
+        <form action="{{url_for('tracker.worker',id=id)}}" method="post">
+            <input type="text" placeholder="token" id="token" name="token">
+            <input type="submit" style="display: none;">
+        </form>
+        <div class="projects-block">
+            {%if projects%}
+            {%for project in projects%}
+            <a href="{{url_for('tracker.project_worker',token=project[2],id=id)}}" style="margin-top: 100px;">
+                <div class="project">
+                    <p>
+                        {{project[1]}}
+                    </p>
+                    <p>
+                        {{project[0]}}
+                        
+                    </p>
+                </div>
+            </a>
+            {%endfor%}
+            {%else%}
+                <p class="empty">вы сейчас не работаете ни над одним проектом</p>
+            {%endif%}
+        </div>
+        
+    </div>
 </body>
 </html>

@@ -3,14 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/main_owner.css')}}">
     <title>Owner</title>
 </head>
 <body>
-    <form action="{{url_for('tracker.owner')}}" method="post">
-        {{form.hidden_tag()}}
-        {{form.title}}
-        {{form.description}}
-        {{form.create}}
-    </form>
+    <header>
+        <a href="{{url_for('tracker.profile_owner',id=id)}}">profile</a>
+    </header>
+    <div class="main">
+        <a href="{{url_for('tracker.create_project',id=id)}}" class="create_project">
+            <div class="circle">
+                +
+            </div>
+        </a>
+        {%if projects%}
+            {%for project in projects%}
+            <a href="{{url_for('tracker.project_owner',id=id,token=project[1])}}">
+                <div class="project-block">
+                    <p>
+                        {{project[2]}}
+                    </p>
+                    <p>
+                        {{project[5]}}
+                    </p>
+                </div>
+            </a>
+            {%endfor%}
+        {%else%}
+            <p class="empty">создайте задачу</p>
+        {%endif%}
+    </div>
 </body>
 </html>

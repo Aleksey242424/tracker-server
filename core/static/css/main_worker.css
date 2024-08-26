@@ -1,0 +1,51 @@
+html,
+body{
+    margin:0;
+}
+a{
+    text-decoration: none;
+    color:black;
+}
+
+header{
+    display: flex;
+    justify-content: end;
+    padding:10px 30px;
+    font-size: 40px;
+}
+
+.main{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding-top: 100px;
+}
+form>input{
+    font-size: 50px;
+    border-radius: 20px;
+    padding:0 10px 0 20px;
+}
+
+.empty{
+    color: #656565;
+    margin-top:100px;
+    font-size: 40px;
+}
+.projects-block{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding-top: 100px;
+}
+.project{
+    border: solid 1px black;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    min-width: 600px;
+    font-size: 40px;
+    padding: 0 20px;
+    border-radius: 20px;
+}

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/create_project.css')}}">
+    <title>Create Project</title>
+</head>
+<body>
+    <header>
+        <a href="{{url_for('tracker.owner',id=id)}}">tasks</a>
+        <a href="{{url_for('tracker.profile_owner',id=id)}}">profile</a>
+    </header>
+    <form action="{{url_for('tracker.create_project',id=id)}}" method="post">
+        {{form.hidden_tag()}}
+        {{form.title}}
+        {{form.description}}
+        {{form.create}}
+    </form>
+</body>
+</html>

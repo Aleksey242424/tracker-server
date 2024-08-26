@@ -3,6 +3,8 @@ from os import makedirs
 from instance.config import setting
 
 
+
+
 def create_app(config = setting):
     app = Flask(
         import_name=__name__,
@@ -37,7 +39,8 @@ def create_app(config = setting):
         response.headers["Strict-Transport-Security"] = "max-age=999999"
         response.headers["X-Content-Type-Security"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
-        response.headers["Content-Security-Policy"] = "default-src 'self' script-src 'unsafe-inline' 'self'"
+        response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'unsafe-inline' 'self' https://code.jquery.com/jquery-3.7.1.min.js;"
         return response
 
     return app
+

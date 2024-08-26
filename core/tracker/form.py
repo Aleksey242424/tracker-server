@@ -22,7 +22,7 @@ class CreateProject(FlaskForm):
         label="title",
         validators=[DataRequired(),Length(1,40)],
         render_kw={
-            "placeholder":"title",
+            "placeholder":"название",
             "id":"title",
             "class":"title"
         }
@@ -30,9 +30,14 @@ class CreateProject(FlaskForm):
 
     description = TextAreaField(
         label="description",
-        validators=[Length(0,800)]
+        validators=[Length(0,800)],
+        render_kw={
+            "placeholder":"описание",
+            "id":"description",
+            "class":"description"
+        }
     )
 
     create = SubmitField(
-        label="create"
+        label="Добавить проект"
     )

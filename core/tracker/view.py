@@ -1,7 +1,8 @@
-from flask import Blueprint,session,redirect,url_for,render_template,request
+from flask import Blueprint,session,redirect,url_for,render_template,request,jsonify
 from .utils import current_user,check_owner,check_worker,init_form,Project
 from core.auth.utils import login_required
 from .form import ProfileWorker,CreateProject
+from datetime import timedelta
 
 bp = Blueprint(
     name="tracker",
@@ -9,36 +10,68 @@ bp = Blueprint(
     url_prefix="/tracker"
 )
 
+@bp.route("/worker/<int:id>/project/<uuid:token>/update_time/",methods={"PUT"})
+@login_required
+@check_worker
+def update_time(id,token):
+    time = list(map(int,request.args.get("time").split(":")))
+    return jsonify(new_time = str(timedelta(hours = time[0],minutes=time[1],seconds=time[2]+1)))
+
 
 @bp.route("/",methods={"GET","POST"})
 @login_required
 def main():
     user = current_user(token = session.get("auth"))
     if user["is_owner"]:
-        return redirect(url_for("tracker.owner"))
-    return redirect(url_for("tracker.worker"))
+        return redirect(url_for("tracker.owner",id=user["id"]))
+    return redirect(url_for("tracker.worker",id=user["id"]))
 
 
-@bp.route("/owner/<int:id>/",methods={"GET","POST"})
+@bp.route("/owner/<int:id>/",methods={"GET"})
 @login_required
 @check_owner
 def owner(id):
-    if request.method == "POST":
-        Project(request.form.to_dict()).create_project(id)
-    form = CreateProject()
-    return render_template("tracker/main_owner.html",form=form)
+    projects = Project(person_id=id).get_projects_owner()
+    return render_template("tracker/main_owner.html",projects=projects,id=id)
     
 
-@bp.route("/worker/",methods={"GET","POST"})
+@bp.route("/worker/<int:id>/",methods={"GET","POST"})
 @login_required
 @check_worker
-def worker():
-    user = current_user(token = session.get("auth"))
-    return render_template("tracker/main_worker.html")
+def worker(id):
+    project_instance = Project(person_id=id)
+    if request.method == "POST":
+        project_instance.add_project(request.form.get("token"))
+        return redirect(url_for("tracker.worker",id=id))
+    projects = project_instance.get_projects_worker()
+    return render_template("tracker/main_worker.html",id=id,projects=projects)
 
 
+@bp.route("/owner/<int:id>/create/",methods={"GET","POST"})
+@login_required
+@check_owner
+def create_project(id):
+    if request.method == "POST":
+        Project(id).create_project(request.form.to_dict())
+        return redirect(url_for("tracker.owner",id=id))
+    form = CreateProject()
+    return render_template("tracker/create_project.html",form=form,id=id)
 
-@bp.route("/worker/<id>/",methods={"GET","POST"})
+@bp.route("/worker/<int:id>/project/<uuid:token>/")
+@login_required
+@check_worker
+def project_worker(id,token):
+    project = Project(person_id=id).get_project_by_token(token=token)
+    return render_template("tracker/project_worker.html",id=id,project=project,token=token)
+
+@bp.route("/owner/<int:id>/project/<uuid:token>/")
+@login_required
+@check_owner
+def project_owner(id,token):
+    return render_template("tracker/project_owner.html")
+
+
+@bp.route("/worker/<int:id>/profile/",methods={"GET","POST"})
 @login_required
 @check_worker
 def profile_worker(id):
@@ -47,7 +80,7 @@ def profile_worker(id):
     return render_template("tracker/profile_worker.html",name=user["name"],form=form)
 
 
-@bp.route("/owner/<int:id>/",methods={"GET","POST"})
+@bp.route("/owner/<int:id>/profile/",methods={"GET","POST"})
 @login_required
 @check_owner
 def profile_owner(id):
@@ -56,4 +89,4 @@ def profile_owner(id):
         ProfileWorker(),
         name=user["name"]
     )
-    return render_template("tracker/profile_owner.html",name=user["name"],form=form)
+    return render_template("tracker/profile_owner.html",name=user["name"],form=form,id=id)

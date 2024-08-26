@@ -2,6 +2,9 @@ from psycopg2 import connect
 from instance.config import setting
 from bcrypt import checkpw
 import click
+from psycopg2.extras import register_uuid
+
+register_uuid()
 
 
 def get_session(DSN:str = setting.DB_CONNECTION):
