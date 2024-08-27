@@ -3,9 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/project_owner.css')}}">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" defer></script>
     <title>Project</title>
 </head>
 <body>
-    
+    <header>
+        <a href="{{url_for('tracker.owner',id=id)}}">tasks</a>
+        <a href="{{url_for('tracker.profile_owner',id=id)}}">profile</a>
+    </header>
+    <p class="info">Ваш токен, с его помощью ваши сотрудники добавят проект</p>
+    <div class="block-token">
+        <input type="text" id="token" value="{{token}}"><button id="copy" onclick="copy()">копировать</button>
+    </div>
+    <div class="main">
+        {%for worker in workers%}
+            <div class="worker-block" id="{{worker[3]}}">
+                <p>{{worker[2]}}</p>
+                <p id="time">{{worker[0]}}</p>
+            </div>
+        {%endfor%}
+    </div>
+    <script src="{{url_for('static',filename='js/project_owner.js')}}"></script>
+    <script>
+        const time = document.getElementById("time")
+        const interval = setInterval(
+        function(){
+            $.ajax({
+                url: '{{url_for("tracker.check_active_workers",id=id,token=token)}}',
+                method: 'get',
+                dataType: 'json',
+                success: function(response){
+                    for (const key in response){                        
+                        if (response[key].state === true){
+                            document.getElementById(key).style.backgroundColor = "#00ff2a54"
+                            time.innerHTML = response[key].time
+                        }else{
+                            document.getElementById(key).style.backgroundColor = "#ff000033"
+                        }
+                    }
+                }
+            });
+            
+        }
+        ,1000
+    )
+    if ("{{workers}}" === "[]"){
+        clearInterval(interval)
+    }
+    </script>
 </body>
 </html>

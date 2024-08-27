@@ -62,10 +62,23 @@ class Project:
         return self.tracker_link_crud.get_all(person_id=self.person_id)
     
     def get_project_by_token(self,token:UUID) -> tuple|None:
-        project = self.project_crud.get_by_token(token=token)
+        project = self.project_crud.get_by_token(
+            token=token,
+            person_id=self.person_id
+            )
         if project is not None:
             return project
         abort(404)
+
+    def get_workers_by_project(self,token:UUID):
+        return self.tracker_info_crud.get_workers_by_token(
+            token=token
+        )
+    
+    def get_is_active_workers(self,token:UUID):
+        return self.tracker_info_crud.get_is_active_workers(
+            token=token
+        )
             
     
     def add_project(self,token:UUID) -> None:
@@ -73,9 +86,23 @@ class Project:
             person_id=self.person_id,
             token=token
         )
-        return self.tracker_link_crud.add(
+        self.tracker_link_crud.add(
             worker_id = self.person_id,
             token = token
+        )
+    
+    def update_time(self,token:UUID,time:datetime):
+        self.tracker_info_crud.update_time(
+            person_id=self.person_id,
+            token=token,
+            time=time
+        )
+
+    def update_is_active(self,token:UUID,active:bool):
+        self.tracker_info_crud.update_is_active(
+            person_id=self.person_id,
+            token=token,
+            is_active=active
         )
 
     def init_project_data(self,form_data:dict):

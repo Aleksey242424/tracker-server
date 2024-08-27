@@ -18,14 +18,13 @@
         <div class="projects-block">
             {%if projects%}
             {%for project in projects%}
-            <a href="{{url_for('tracker.project_worker',token=project[2],id=id)}}" style="margin-top: 100px;">
+            <a href="{{url_for('tracker.project_worker',token=project[2],id=id)}}">
                 <div class="project">
                     <p>
                         {{project[1]}}
                     </p>
                     <p>
                         {{project[0]}}
-                        
                     </p>
                 </div>
             </a>

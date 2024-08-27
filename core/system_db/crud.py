@@ -102,6 +102,7 @@ class ProjectCRUD:
     @staticmethod
     def get_by_token(
         token:UUID,
+        person_id:int,
         db_session = next(get_session())
         ) -> tuple:
         with db_session.cursor() as cursor:
@@ -110,9 +111,12 @@ class ProjectCRUD:
                             WHEN tracker_info.time IS NULL THEN make_time(0,0,0.0)
                             ELSE tracker_info.time
                             END AS "time_work",project.title,project.description FROM project JOIN tracker_info ON project.token = tracker_info.token 
-                           WHERE project.token = %(token)s""",
-                           {"token":token})
+                           WHERE project.token = %(token)s AND tracker_info.person = %(person)s""",
+                           {"token":token,
+                            "person":person_id})
             return cursor.fetchone()
+        
+
 
 
 class TrackerLink:
@@ -153,7 +157,6 @@ class TrackerLink:
         
     
 
-
 class TrackerInfo:
     @staticmethod
     def add(
@@ -172,6 +175,70 @@ class TrackerInfo:
                 "when":when
             })
             db_session.commit()
+
+    @staticmethod
+    def update_time(person_id:int,
+                    token:UUID,
+                    time:datetime,
+                    db_session = next(get_session())):
+        with db_session.cursor() as cursor:
+            cursor.execute("""
+            UPDATE tracker_info SET "time" = %(time)s WHERE person = %(person)s AND token = %(token)s
+            """,
+            {
+                "person":person_id,
+                "token":token,
+                "time":time
+            })
+            db_session.commit()
+            
+
+    @staticmethod
+    def update_is_active(person_id:int,
+                    token:UUID,
+                    is_active:bool,
+                    db_session = next(get_session())):
+        with db_session.cursor() as cursor:
+            cursor.execute("""
+            UPDATE tracker_info SET "is_active" = %(is_active)s WHERE person = %(person)s AND token = %(token)s
+            """,
+            {
+                "person":person_id,
+                "token":token,
+                "is_active":is_active
+            })
+            db_session.commit()
+
+    @staticmethod
+    def get_workers_by_token(
+        token:UUID,
+        db_session = next(get_session())
+    ):
+        with db_session.cursor() as cursor:
+            cursor.execute("""
+                    SELECT CASE 
+                           WHEN tracker_info.time IS NULL THEN  make_time(0,0,0.0)
+                           ELSE tracker_info.time
+                           END AS "worker_time",tracker_info.is_active,person.name,tracker_info.person
+                           FROM tracker_info JOIN person ON tracker_info.person = person.id
+                           WHERE tracker_info.token = %(token)s;
+                """,{"token":token})
+
+            return cursor.fetchall()
+        
+    @staticmethod
+    def get_is_active_workers(
+        token:UUID,
+        db_session = next(get_session())
+    ):
+        with db_session.cursor() as cursor:
+            cursor.execute("""
+                    SELECT person,is_active,time FROM tracker_info WHERE token = %(token)s;
+                """,{"token":token})
+
+            return cursor.fetchall()
+        
+            
 
     
     

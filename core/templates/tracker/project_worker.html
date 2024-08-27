@@ -7,46 +7,17 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" defer></script>
     <title>Project</title>
 </head>
-<body>
+<body onunload="end('{{url_for("tracker.update_active",id=id,token=token)}}')">
     <header>
         <a href="{{url_for('tracker.worker',id=id)}}">tasks</a>
         <a href="{{url_for('tracker.profile_worker',id=id)}}">profile</a>
     </header>
     <div class="main">
         <h1>{{project[1]}}</h1> 
-        <div><button onclick="start()" id="player">▶</button><p id="time">{{project[0]}}</p></div>
+        <div><button onclick="start('{{url_for("tracker.update_time",id=id,token=token)}}','{{url_for("tracker.update_active",id=id,token=token)}}')" id="player">▶</button><p id="state">paused</p></div>
+        <p id="time">{{project[0]}}</p>
         <h2>{{project[2]}}</h2>
     </div>
-
-    <script type="text/javascript" charset="utf-8">
-        const time = document.getElementById("time")
-        const player = document.getElementById("player")
-        let statePlayer = false
-        function start(){
-            if (statePlayer){
-                statePlayer = false
-                player.innerHTML = "▶"
-            }else{
-                statePlayer = true
-                player.innerHTML = "⏸️"
-                const interval = setInterval(
-                    function(){
-                        $.ajax({
-                            url: '{{url_for("tracker.update_time",id=id,token=token)}}?time=' + time.innerHTML,
-                            method: 'put',
-                            dataType: 'json',
-                            success: function(response){
-                                 time.innerHTML = response.new_time
-                            }
-                        });
-                        if (!statePlayer){
-                            clearInterval(interval)
-                        }
-                    }
-                    ,1000
-                )
-            }
-        }
-    </script>
+    <script type="text/javascript" charset="utf-8" src="{{url_for('static',filename='js/project_worker.js')}}"></script>
 </body>
 </html>

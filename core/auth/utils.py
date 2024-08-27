@@ -10,6 +10,7 @@ from functools import wraps
 from pydantic import ValidationError
 
 
+
 def jwt_encode(
     payload:dict,
     algorithm:str = setting.algorithm,

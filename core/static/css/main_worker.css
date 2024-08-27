@@ -36,8 +36,11 @@ form>input{
     width: 100%;
     display: flex;
     align-items: center;
+    justify-content: center;
     flex-direction: column;
-    padding-top: 100px;
+}
+.projects-block>a{
+    margin-top: 50px;
 }
 .project{
     border: solid 1px black;

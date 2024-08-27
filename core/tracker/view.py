@@ -10,13 +10,6 @@ bp = Blueprint(
     url_prefix="/tracker"
 )
 
-@bp.route("/worker/<int:id>/project/<uuid:token>/update_time/",methods={"PUT"})
-@login_required
-@check_worker
-def update_time(id,token):
-    time = list(map(int,request.args.get("time").split(":")))
-    return jsonify(new_time = str(timedelta(hours = time[0],minutes=time[1],seconds=time[2]+1)))
-
 
 @bp.route("/",methods={"GET","POST"})
 @login_required
@@ -57,6 +50,46 @@ def create_project(id):
     form = CreateProject()
     return render_template("tracker/create_project.html",form=form,id=id)
 
+
+@bp.route("/worker/<int:id>/project/<uuid:token>/update_time/",methods={"GET","PUT"})
+@login_required
+@check_worker
+def update_time(id,token):
+    time = list(map(int,request.args.get("time").split(":")))
+    new_time = timedelta(hours = time[0],minutes=time[1],seconds=time[2]+1)
+    Project(person_id=id).update_time(
+        token=token,
+        time=new_time
+    )
+    return jsonify(new_time = str(new_time))
+
+@bp.route("/worker/<int:id>/project/<uuid:token>/is_active/",methods={"PUT"})
+@login_required
+@check_worker
+def update_active(id,token):
+    project = Project(person_id=id)
+    if request.args.get("active"):
+        project.update_is_active(token=token,
+                                 active=True)
+    else:
+        project.update_is_active(token=token,
+                                 active=False)
+    return jsonify(message = "change active")
+
+@bp.route("/owner/<int:id>/project/<uuid:token>/check_active/",methods={"GET"})
+@login_required
+@check_owner
+def check_active_workers(id,token):
+    states_workers = {}
+    for data in Project(person_id=id).get_is_active_workers(token):
+        states_workers[data[0]] = {
+            "id":data[0],
+            "state":data[1],
+            "time":str(data[2])
+        }
+    return states_workers
+
+
 @bp.route("/worker/<int:id>/project/<uuid:token>/")
 @login_required
 @check_worker
@@ -68,7 +101,8 @@ def project_worker(id,token):
 @login_required
 @check_owner
 def project_owner(id,token):
-    return render_template("tracker/project_owner.html")
+    workers = Project(person_id=id).get_workers_by_project(token=token)
+    return render_template("tracker/project_owner.html",id=id,token=token,workers = workers)
 
 
 @bp.route("/worker/<int:id>/profile/",methods={"GET","POST"})
