@@ -1,12 +1,9 @@
 from flask import Blueprint,session,redirect,url_for,render_template,request,jsonify,flash
-from .utils import current_user,check_owner,check_worker,init_form,Project
+from .utils import current_user,check_owner,check_worker,init_form,Project,Owner,Worker
 from core.auth.utils import login_required
 from .form import Profile,CreateProject
 from datetime import timedelta
-from core.system_db.crud import PersonCRUD
-from core.auth.utils import jwt_encode
-from core.auth.schem import User
-from psycopg2.errors import UniqueViolation
+
 
 bp = Blueprint(
     name="tracker",
@@ -71,12 +68,12 @@ def update_time(id,token):
 @login_required
 @check_worker
 def update_active(id,token):
-    project = Project(person_id=id)
+    worker = Worker(person_id=id)
     if request.args.get("active"):
-        project.update_is_active(token=token,
+        worker.update_is_active(token=token,
                                  active=True)
     else:
-        project.update_is_active(token=token,
+        worker.update_is_active(token=token,
                                  active=False)
     return jsonify(message = "change active")
 
@@ -85,7 +82,7 @@ def update_active(id,token):
 @check_owner
 def check_active_workers(id,token):
     states_workers = {}
-    for data in Project(person_id=id).get_is_active_workers(token):
+    for data in Worker(person_id=id).get_is_active_workers(token):
         states_workers[data[0]] = {
             "id":data[0],
             "state":data[1],
@@ -105,7 +102,7 @@ def project_worker(id,token):
 @login_required
 @check_owner
 def project_owner(id,token):
-    workers = Project(person_id=id).get_workers_by_project(token=token)
+    workers = Worker(person_id=id).get_workers_by_project(token=token)
     return render_template("tracker/project_owner.html",id=id,token=token,workers = workers)
 
 
@@ -119,26 +116,14 @@ def profile_worker(id):
         name=user["name"],
         email = user["email"]
     )
-    if request.method == "POST" and form.validate():
-        try:
-            PersonCRUD.update_email_name(
-                id=id,
-                name=request.form["name"],
-                email=request.form["email"]
-            )
-            user = User(
-                id = id,
-                name = request.form["name"],
-                password = user["password"],
-                email= request.form["email"],
-                is_owner=user.get("is_owner")
-            )
-            session["auth"] = jwt_encode(
-                payload=user.model_dump()
-            )
-        except UniqueViolation:
-            flash("Пользователь с такой почтой или именем уже имеется")
-        return redirect(url_for('tracker.profile_owner',id=id))
+    if request.method == "POST" and request.form["name"] and request.form["email"]:
+        Worker(person_id=id).update_profile(
+            name = request.form.get("name"),
+            email = request.form.get("email"),
+            password = user["password"],
+            is_owner=user["is_owner"]
+        )
+        return redirect(url_for('tracker.profile_worker',id=id))
     return render_template("tracker/profile_worker.html",form=form,id=id)
 
 
@@ -153,24 +138,12 @@ def profile_owner(id):
         email = user["email"]
     )
     if request.method == "POST" and request.form["name"] and request.form["email"]:
-        try:
-            PersonCRUD.update_email_name(
-                id=id,
-                name=request.form["name"],
-                email=request.form["email"]
-            )
-            user = User(
-                id = id,
-                name = request.form["name"],
-                password = user["password"],
-                email= request.form["email"],
-                is_owner=user.get("is_owner")
-            )
-            session["auth"] = jwt_encode(
-                payload=user.model_dump()
-            )
-        except UniqueViolation:
-            flash("Пользователь с такой почтой или именем уже имеется")
+        Owner(person_id=id).update_profile(
+            name = request.form.get("name"),
+            email = request.form.get("email"),
+            password = user["password"],
+            is_owner=user["is_owner"]
+        )
         return redirect(url_for('tracker.profile_owner',id=id))
-    projects = Project(person_id=id).get_data_projects_for_profile_owner()
-    return render_template("tracker/profile_owner.html",name=user["name"],form=form,id=id,projects=projects)
+    projects_data = Owner(person_id=id).get_data_projects_for_profile_owner()
+    return render_template("tracker/profile_owner.html",name=user["name"],form=form,id=id,projects=projects_data)

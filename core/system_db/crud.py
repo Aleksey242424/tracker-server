@@ -1,6 +1,6 @@
 from .utils import get_session,check_hash_password
-from flask import abort
-from psycopg2.errors import UniqueViolation
+from flask import abort,flash
+from psycopg2.errors import UniqueViolation,InFailedSqlTransaction
 from uuid import UUID
 from datetime import datetime
 
@@ -26,6 +26,7 @@ class PersonCRUD:
                     })
                 
                 db_session.commit()
+                return True
             
             except UniqueViolation:
                 db_session.rollback()
@@ -60,14 +61,18 @@ class PersonCRUD:
             db_session = next(get_session())
     ):
         with db_session.cursor() as cursor:
-            cursor.execute("""
-            UPDATE person SET name = %(name)s,email = %(email)s WHERE id=%(id)s;
-            """,{
-                "name":name,
-                "email":email,
-                "id":id
-            })
-            db_session.commit()
+            try:
+                cursor.execute("""
+                UPDATE person SET name = %(name)s,email = %(email)s WHERE id=%(id)s;
+                """,{
+                    "name":name,
+                    "email":email,
+                    "id":id
+                })
+                db_session.commit()
+            except (InFailedSqlTransaction,UniqueViolation):
+                db_session.rollback()
+                flash("Пользователь с такой почтой или именем уже имеется")
 
 class ProjectCRUD:
     @staticmethod
@@ -159,7 +164,7 @@ class TrackerLink:
         with db_session.cursor() as cursor:
             cursor.execute(
             """
-            SELECT CASE
+            SELECT DISTINCT CASE
             WHEN tracker_info.time IS NULL THEN make_time(0,0,0.0)
             ELSE tracker_info.time
             END AS "time_work",project.title,project.token FROM tracker_link 

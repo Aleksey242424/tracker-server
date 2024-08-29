@@ -16,6 +16,9 @@
             {{form.email}}
             {{form.update}}
         </form>
+        {%with message = get_flashed_messages()%}
+        {{message}}
+        {%endwith%}
     </div>
 </body>
 </html>
