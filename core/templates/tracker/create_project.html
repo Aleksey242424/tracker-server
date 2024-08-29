@@ -8,8 +8,8 @@
 </head>
 <body>
     <header>
-        <a href="{{url_for('tracker.owner',id=id)}}">tasks</a>
-        <a href="{{url_for('tracker.profile_owner',id=id)}}">profile</a>
+        <a href="{{url_for('tracker.owner',id=id)}}">проекты</a>
+        <a href="{{url_for('tracker.profile_owner',id=id)}}">профиль</a>
     </header>
     <form action="{{url_for('tracker.create_project',id=id)}}" method="post">
         {{form.hidden_tag()}}

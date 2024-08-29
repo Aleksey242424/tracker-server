@@ -16,22 +16,22 @@ def check_failed_login():
 @bp.route("/register/",methods={"GET","POST"})
 @check_auth
 def register():
-    if request.method == "POST":
+    form = RegisterForm()
+    if request.method == "POST" and form.validate():
         form_data = request.form.to_dict()
         return RegisterAuth(form_data).main()
     else:
-        form = RegisterForm()
         return render_template("auth/register.html",form = form)
     
 
 @bp.route("/login/",methods={"GET","POST"})
 @check_auth
 def login():
-    if request.method == "POST":
+    form = LoginForm()
+    if request.method == "POST" and form.validate():
         form_data = request.form.to_dict()
         return LoginAuth(form_data=form_data).main()
     else:
-        form = LoginForm()
-        return render_template("auth/login.html",form=form)\
+        return render_template("auth/login.html",form=form)
         
 

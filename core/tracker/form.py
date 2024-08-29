@@ -1,10 +1,10 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField,EmailField,FileField,TextAreaField,SubmitField
-from wtforms.validators import DataRequired,Length
+from wtforms import StringField,EmailField,TextAreaField,SubmitField
+from wtforms.validators import DataRequired,Length,Email
 
 
 
-class ProfileWorker(FlaskForm):
+class Profile(FlaskForm):
     name = StringField(
         label="name",
         validators=[DataRequired(),Length(3,40)],
@@ -14,7 +14,17 @@ class ProfileWorker(FlaskForm):
             "class":"name"
             }
     )
-    update = SubmitField(label="update")
+    email = EmailField(
+        label="email",
+        validators=[DataRequired(),Length(6,90),Email()],
+        render_kw={
+            "placeholder":"email",
+            "id":"email",
+            "class":"email"
+            }
+    )
+
+    update = SubmitField(label="сохранить")
 
 
 class CreateProject(FlaskForm):

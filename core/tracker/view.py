@@ -1,8 +1,12 @@
-from flask import Blueprint,session,redirect,url_for,render_template,request,jsonify
+from flask import Blueprint,session,redirect,url_for,render_template,request,jsonify,flash
 from .utils import current_user,check_owner,check_worker,init_form,Project
 from core.auth.utils import login_required
-from .form import ProfileWorker,CreateProject
+from .form import Profile,CreateProject
 from datetime import timedelta
+from core.system_db.crud import PersonCRUD
+from core.auth.utils import jwt_encode
+from core.auth.schem import User
+from psycopg2.errors import UniqueViolation
 
 bp = Blueprint(
     name="tracker",
@@ -44,10 +48,10 @@ def worker(id):
 @login_required
 @check_owner
 def create_project(id):
-    if request.method == "POST":
+    form = CreateProject()
+    if request.method == "POST" and form.validate():
         Project(id).create_project(request.form.to_dict())
         return redirect(url_for("tracker.owner",id=id))
-    form = CreateProject()
     return render_template("tracker/create_project.html",form=form,id=id)
 
 
@@ -110,8 +114,32 @@ def project_owner(id,token):
 @check_worker
 def profile_worker(id):
     user = current_user(token = session.get("auth"))
-    form = ProfileWorker()
-    return render_template("tracker/profile_worker.html",name=user["name"],form=form)
+    form = init_form(
+        form = Profile(),
+        name=user["name"],
+        email = user["email"]
+    )
+    if request.method == "POST" and form.validate():
+        try:
+            PersonCRUD.update_email_name(
+                id=id,
+                name=request.form["name"],
+                email=request.form["email"]
+            )
+            user = User(
+                id = id,
+                name = request.form["name"],
+                password = user["password"],
+                email= request.form["email"],
+                is_owner=user.get("is_owner")
+            )
+            session["auth"] = jwt_encode(
+                payload=user.model_dump()
+            )
+        except UniqueViolation:
+            flash("Пользователь с такой почтой или именем уже имеется")
+        return redirect(url_for('tracker.profile_owner',id=id))
+    return render_template("tracker/profile_worker.html",form=form,id=id)
 
 
 @bp.route("/owner/<int:id>/profile/",methods={"GET","POST"})
@@ -120,7 +148,29 @@ def profile_worker(id):
 def profile_owner(id):
     user = current_user(token = session.get("auth"))
     form = init_form(
-        ProfileWorker(),
-        name=user["name"]
+        Profile(),
+        name=user["name"],
+        email = user["email"]
     )
-    return render_template("tracker/profile_owner.html",name=user["name"],form=form,id=id)
+    if request.method == "POST" and request.form["name"] and request.form["email"]:
+        try:
+            PersonCRUD.update_email_name(
+                id=id,
+                name=request.form["name"],
+                email=request.form["email"]
+            )
+            user = User(
+                id = id,
+                name = request.form["name"],
+                password = user["password"],
+                email= request.form["email"],
+                is_owner=user.get("is_owner")
+            )
+            session["auth"] = jwt_encode(
+                payload=user.model_dump()
+            )
+        except UniqueViolation:
+            flash("Пользователь с такой почтой или именем уже имеется")
+        return redirect(url_for('tracker.profile_owner',id=id))
+    projects = Project(person_id=id).get_data_projects_for_profile_owner()
+    return render_template("tracker/profile_owner.html",name=user["name"],form=form,id=id,projects=projects)

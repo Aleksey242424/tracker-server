@@ -9,8 +9,8 @@
 </head>
 <body onunload="end('{{url_for("tracker.update_active",id=id,token=token)}}')">
     <header>
-        <a href="{{url_for('tracker.worker',id=id)}}">tasks</a>
-        <a href="{{url_for('tracker.profile_worker',id=id)}}">profile</a>
+        <a href="{{url_for('tracker.worker',id=id)}}">проекты</a>
+        <a href="{{url_for('tracker.profile_worker',id=id)}}">профиль</a>
     </header>
     <div class="main">
         <h1>{{project[1]}}</h1> 

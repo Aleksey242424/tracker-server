@@ -53,6 +53,21 @@ class PersonCRUD:
             
             abort(401)
 
+    def update_email_name(
+            id:int,
+            name:str,
+            email:str,
+            db_session = next(get_session())
+    ):
+        with db_session.cursor() as cursor:
+            cursor.execute("""
+            UPDATE person SET name = %(name)s,email = %(email)s WHERE id=%(id)s;
+            """,{
+                "name":name,
+                "email":email,
+                "id":id
+            })
+            db_session.commit()
 
 class ProjectCRUD:
     @staticmethod
@@ -152,6 +167,21 @@ class TrackerLink:
             JOIN tracker_info ON project.token = tracker_info.token WHERE person = %(person_id)s;
             """,
             {"person_id":person_id}
+            )
+            return cursor.fetchall()
+        
+    @staticmethod
+    def get_all_for_profile_owner(
+        token:UUID,
+        db_session = next(get_session())
+    ) -> list:
+        with db_session.cursor() as cursor:
+            cursor.execute(
+            """
+            SELECT DISTINCT person.name FROM tracker_link JOIN tracker_info ON tracker_link.token = tracker_info.token
+            JOIN person ON person.id = tracker_info.person WHERE tracker_link.token = %(token)s;
+            """,
+            {"token":token}
             )
             return cursor.fetchall()
         

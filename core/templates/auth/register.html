@@ -3,17 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='css/register.css')}}">
+    <title>Регистрация</title>
 </head>
 <body>
-    <form action="{{url_for('auth.register')}}" method="post">
-        {{form.hidden_tag()}}
-        {{form.name}}
-        {{form.password}}
-        {{form.confirm_password}}
-        {{form.email}}
-        {{form.is_owner}}
-        {{form.sign_up}}
-    </form>
+    <header>
+        <a href="{{url_for('auth.login')}}">Войти</a>
+    </header>
+    <div class="main">
+        <p>Регистрация</p>
+        <form action="{{url_for('auth.register')}}" method="post">
+            {{form.hidden_tag()}}
+            {{form.name}}
+            {{form.password}}
+            {{form.confirm_password}}
+            {{form.email}}
+            <div class="is_owner-block">{{form.is_owner}} я владелец</div>
+            {{form.sign_up}}
+        </form>
+    </div>
 </body>
 </html>

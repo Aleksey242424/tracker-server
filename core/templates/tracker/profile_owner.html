@@ -3,9 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/profile_owner.css')}}">
     <title>Profile {{name}}</title>
 </head>
 <body>
-    {{form.name}}
+    <header>
+        <a href="{{url_for('tracker.owner',id=id)}}">проекты</a>
+    </header>
+    <div class="main">
+        <form action="{{url_for('tracker.profile_owner',id=id)}}" method="post">
+            {{form.name}}
+            {{form.email}}
+            {{form.update}}
+        </form>
+        {%if projects%}
+            {%for project in projects%}
+                <p class="project">{{projects[project]['name']}}</p>
+                {%for worker in projects[project]['workers']%}
+                    <li>{{worker[0]}}</li>
+                {%endfor%}
+            {%endfor%}
+        {%else%}
+        <p>У вас пока нет проектов</p>
+        {%endif%}
+    </div>
 </body>
 </html>

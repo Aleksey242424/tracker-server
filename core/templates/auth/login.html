@@ -3,15 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/login.css')}}">
     <title>Login</title>
 </head>
 <body>
-    <form action="{{url_for('auth.login')}}" method="post">
-        {{form.hidden_tag()}}
-        {{form.name}}
-        {{form.password}}
-        {{form.is_owner}}
-        {{form.sign_in}}
-    </form>
+    <header>
+        <a href="{{url_for('auth.register')}}">Регистрация</a>
+    </header>
+    <div class="main">
+        <p>Вход</p>
+        <form action="{{url_for('auth.login')}}" method="post">
+            {{form.hidden_tag()}}
+            {{form.name}}
+            {{form.password}}
+            {{form.sign_in}}
+            
+        </form>
+    </div>
 </body>
 </html>

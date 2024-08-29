@@ -8,7 +8,7 @@ class RegisterForm(FlaskForm):
         label="name",
         validators=[DataRequired(),Length(3,40)],
         render_kw={
-            "placeholder":"username",
+            "placeholder":"имя",
             "id":"name",
             "class":"name"
         }
@@ -17,7 +17,7 @@ class RegisterForm(FlaskForm):
         label="password",
         validators=[DataRequired(),Length(6,20)],
         render_kw={
-            "placeholder":"password",
+            "placeholder":"пароль",
             "id":"password",
             "class":"password"
             }
@@ -26,7 +26,7 @@ class RegisterForm(FlaskForm):
         label="confirm_password",
         validators=[EqualTo('password')],
         render_kw={
-            "placeholder":"confirm password",
+            "placeholder":"повторить пароль",
             "id":"password",
             "class":"password"
             }
@@ -36,8 +36,8 @@ class RegisterForm(FlaskForm):
         validators=[DataRequired(),Length(6,90),Email()],
         render_kw={
             "placeholder":"email",
-            "id":"password",
-            "class":"password"
+            "id":"email",
+            "class":"email"
             }
     )
 
@@ -49,7 +49,7 @@ class RegisterForm(FlaskForm):
         }
     )
 
-    sign_up = SubmitField(label="sign up")
+    sign_up = SubmitField(label="регистрация")
 
 
 class LoginForm(FlaskForm):
@@ -57,7 +57,7 @@ class LoginForm(FlaskForm):
         label="name",
         validators=[DataRequired(),Length(3,40)],
         render_kw={
-            "placeholder":"username",
+            "placeholder":"имя",
             "id":"name",
             "class":"name"
         }
@@ -66,9 +66,9 @@ class LoginForm(FlaskForm):
         label="password",
         validators=[DataRequired(),Length(6,20)],
         render_kw={
-            "placeholder":"password",
+            "placeholder":"пароль",
             "id":"password",
             "class":"password"
             }
     )
-    sign_in = SubmitField(label="sign in")
+    sign_in = SubmitField(label="Войти")

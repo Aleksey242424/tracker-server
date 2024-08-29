@@ -61,6 +61,13 @@ class Project:
     def get_projects_worker(self) -> list:
         return self.tracker_link_crud.get_all(person_id=self.person_id)
     
+    def get_data_projects_for_profile_owner(self) -> list:
+        data_profile = {}
+        for project in self.project_crud.get_all_for_owner(owner_id=self.person_id):
+            data_profile[project[2]] = {"name":project[2],
+             "workers":self.tracker_link_crud.get_all_for_profile_owner(token=project[1])}
+        return data_profile
+    
     def get_project_by_token(self,token:UUID) -> tuple|None:
         project = self.project_crud.get_by_token(
             token=token,
