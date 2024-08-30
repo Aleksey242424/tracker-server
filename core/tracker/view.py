@@ -83,6 +83,7 @@ def update_active(id,token):
 def check_active_workers(id,token):
     states_workers = {}
     for data in Worker(person_id=id).get_is_active_workers(token):
+        print(data)
         states_workers[data[0]] = {
             "id":data[0],
             "state":data[1],

@@ -1,8 +1,9 @@
 from .utils import get_session,check_hash_password
-from flask import abort,flash
+from flask import abort
 from psycopg2.errors import UniqueViolation,InFailedSqlTransaction
 from uuid import UUID
 from datetime import datetime
+
 
 class PersonCRUD:
     @staticmethod
@@ -72,7 +73,7 @@ class PersonCRUD:
                 db_session.commit()
             except (InFailedSqlTransaction,UniqueViolation):
                 db_session.rollback()
-                flash("Пользователь с такой почтой или именем уже имеется")
+                
 
 class ProjectCRUD:
     @staticmethod
@@ -136,7 +137,6 @@ class ProjectCRUD:
                             "person":person_id})
             return cursor.fetchone()
         
-
 
 
 class TrackerLink:

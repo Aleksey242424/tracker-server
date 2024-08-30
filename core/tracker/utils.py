@@ -1,4 +1,4 @@
-from flask import session,redirect,url_for,abort
+from flask import session,redirect,url_for,abort,flash
 from functools import wraps
 from core.auth.utils import jwt_decode,jwt_encode
 from flask_wtf import FlaskForm
@@ -132,17 +132,19 @@ class BasePerson:
             id=self.person_id,
             name=name,
             email=email
-        ) is not None:
-            user = User(
-                id = self.person_id,
-                name = name,
-                password = password,
-                email = email,
-                is_owner = is_owner
-            )
-            session["auth"] = jwt_encode(
-                payload=user.model_dump()
-            )
+        ) is None:
+            flash("Пользователь с такой почтой или именем уже имеется")
+        user = User(
+            id = self.person_id,
+            name = name,
+            password = password,
+            email = email,
+            is_owner = is_owner
+        )
+        session["auth"] = jwt_encode(
+            payload=user.model_dump()
+        )
+            
 
             
         

@@ -16,6 +16,9 @@
             {{form.email}}
             {{form.update}}
         </form>
+        {%with message = get_flashed_messages()%}
+            {{message[0]}}
+        {%endwith%}
         {%if projects%}
             {%for project in projects%}
                 <p class="project">{{projects[project]['name']}}</p>

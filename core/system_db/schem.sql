@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS project(
     id SERIAL PRIMARY KEY,
     token UUID UNIQUE NOT NULL,
     title VARCHAR(40) NOT NULL,
-    "description" VARCHAR(800),
+    "description" TEXT,
     "owner" INTEGER NOT NULL,
     date_create DATE NOT NULL,
     FOREIGN KEY("owner") REFERENCES person(id)

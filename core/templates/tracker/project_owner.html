@@ -20,13 +20,12 @@
         {%for worker in workers%}
             <div class="worker-block" id="{{worker[3]}}">
                 <p>{{worker[2]}}</p>
-                <p id="time">{{worker[0]}}</p>
+                <p id="time{{worker[3]}}">{{worker[0]}}</p>
             </div>
         {%endfor%}
     </div>
     <script src="{{url_for('static',filename='js/project_owner.js')}}"></script>
     <script>
-        const time = document.getElementById("time")
         const interval = setInterval(
         function(){
             $.ajax({
@@ -34,10 +33,10 @@
                 method: 'get',
                 dataType: 'json',
                 success: function(response){
-                    for (const key in response){                        
+                    for (let key in response){                        
                         if (response[key].state === true){
                             document.getElementById(key).style.backgroundColor = "#00ff2a54"
-                            time.innerHTML = response[key].time
+                            document.getElementById("time"+key).innerHTML = response[key].time
                         }else{
                             document.getElementById(key).style.backgroundColor = "#ff000033"
                         }

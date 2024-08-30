@@ -10,17 +10,23 @@ class TestRegister:
     @pytest.mark.parametrize(
             "user,expected",
             [(User(
-                name = "Anton",
+                name = "TestOwner",
                password = "sadjdqweo",
-               email = "anton@mail.ru",
+               email = "TestOwner@mail.ru",
                is_owner = True
             ),nullcontext()),
             (User(
-                name = "Anton",
+                name = "TestOwner",
                password = "sadjdqweo",
-               email = "anton@mail.ru"
+               email = "TestOwner@mail.ru"
             ),pytest.raises(AssertionError)
-            )])
+            ),
+            (User(
+                name = "TestWorker",
+               password = "sadjdqweo",
+               email = "TestWorker@mail.ru",
+               is_owner = False
+            ),nullcontext())])
     def test_register_auth(self,client,user:User,expected):
         with expected:
             assert client.post("/auth/register/",data={**user.model_dump()}).status_code != 401
@@ -33,7 +39,7 @@ class TestRegister:
             is_owner = True
     )):
         with client:
-            assert client.post("auth/register/",data={**user.model_dump()}).status_code != 401
+            assert client.post("/auth/register/",data={**user.model_dump()}).status_code != 401
             token = session["auth"]
             assert token
             assert jwt_decode(token = token)
@@ -42,7 +48,7 @@ class TestRegister:
 
 class TestLogin:
     def test_login_auth(self,client,user:User = User(
-                name = "Anton",
+                name = "TestOwner",
                password = "sadjdqweo",
             )):
         with client:

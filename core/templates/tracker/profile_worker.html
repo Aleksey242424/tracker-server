@@ -17,7 +17,7 @@
             {{form.update}}
         </form>
         {%with message = get_flashed_messages()%}
-        {{message}}
+            {{message[0]}}
         {%endwith%}
     </div>
 </body>

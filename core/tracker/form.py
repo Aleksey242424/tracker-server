@@ -40,7 +40,7 @@ class CreateProject(FlaskForm):
 
     description = TextAreaField(
         label="description",
-        validators=[Length(0,800)],
+        validators=[],
         render_kw={
             "placeholder":"описание",
             "id":"description",

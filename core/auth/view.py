@@ -17,7 +17,7 @@ def check_failed_login():
 @check_auth
 def register():
     form = RegisterForm()
-    if request.method == "POST" and form.validate():
+    if request.method == "POST":
         form_data = request.form.to_dict()
         return RegisterAuth(form_data).main()
     else:
@@ -28,7 +28,7 @@ def register():
 @check_auth
 def login():
     form = LoginForm()
-    if request.method == "POST" and form.validate():
+    if request.method == "POST":
         form_data = request.form.to_dict()
         return LoginAuth(form_data=form_data).main()
     else:
