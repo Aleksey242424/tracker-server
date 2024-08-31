@@ -15,7 +15,7 @@ __Project Tracker — это инструмент для управления и
 
 
 Технологии:
-- Бэкенд: flask
+- Бэкенд: flask,psycopg2
 - База данных: Postgresql
 - Фронтенд: css,js
 
