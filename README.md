@@ -22,14 +22,14 @@ cd tracker-server
 Создайте файл .env на основе примера:
 cp .env.example .env
 ### 3. Содержимое env файла
-DB_HOST=db<br>
-DB_PORT=5432<br>
-DB_NAME=tracker_db<br>
-DB_USER=postgres<br>
-DB_PASS=your_strong_password<br>
-SECRET_KEY=your_secret_JWT_key<br>
-ALGORITHM=HS256<br>
-ACCESS_TOKEN_EXPIRE_MINUTES=30<br>
+DB_HOST=db<br><br>
+DB_PORT=5432<br><br>
+DB_NAME=tracker_db<br><br>
+DB_USER=postgres<br><br>
+DB_PASS=your_strong_password<br><br>
+SECRET_KEY=your_secret_JWT_key<br><br>
+ALGORITHM=HS256<br><br>
+ACCESS_TOKEN_EXPIRE_MINUTES=30<br><br>
 
 🛠 Технические детали
 Модели базы данных
