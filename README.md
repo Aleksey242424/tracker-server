@@ -1,24 +1,72 @@
-# Project Tracker
+# 🚀 Task Tracker Server
 
-__Project Tracker — это инструмент для управления и отслеживания задач в рамках командных проектов. Он предназначен для упрощения процесса планирования, мониторинга и завершения задач, что позволяет командам быть более организованными и продуктивными.__
+сервер для управления задачами, построенный на **FastAPI** с использованием **PostgreSQL** и **SQLAlchemy**. Проект демонстрирует навыки backend-разработки, работу с базами данных, аутентификацией и контейнеризацией.
 
-Основные функции:
-- __Создание задач: Легкий интерфейс для добавления новых задач с возможностью отслеживания активности.__<br>
-![](https://github.com/Aleksey242424/tracker-server/blob/main/docs/assets/media/create_project.gif)
-![](https://github.com/Aleksey242424/tracker-server/blob/main/docs/assets/media/add_project.gif)
+## 📌 Особенности проекта
+
+- **FastAPI** – современный, быстрый веб-фреймворк для Python
+- **PostgreSQL** – реляционная база данных
+- **SQLAlchemy** – ORM для работы с БД
+- **Pydantic** – валидация данных и сериализация
+- **Docker** – контейнеризация приложения
+- **JWT-аутентификация** – защита эндпоинтов
+- **Асинхронная работа** – высокая производительность
+
+## 🗂 Структура проекта
+
+tracker-server/
+├── app/
+│ ├── init.py
+│ ├── main.py # Точка входа, настройка FastAPI
+│ ├── database.py # Подключение к БД, настройка сессии
+│ ├── models.py # SQLAlchemy модели
+│ ├── schemas.py # Pydantic схемы
+│ ├── crud.py # Бизнес-логика (создание, чтение, обновление, удаление)
+│ ├── auth.py # Логика аутентификации и JWT
+│ └── dependencies.py # Зависимости (получение текущего пользователя)
+├── .env.example # Пример переменных окружения
+├── .gitignore
+├── docker-compose.yml # Запуск приложения и БД через Docker
+├── Dockerfile # Образ приложения
+├── requirements.txt # Зависимости Python
+└── README.md # Эта документация
 
 
-- __Фильтры и сортировка: ...__<br>
-![](https://github.com/Aleksey242424/tracker-server/blob/main/docs/assets/media/analytics.gif)
-- __Отчеты: Генерация отчетов о выполненных задачах и общей эффективности команды.__<br>
-![](https://github.com/Aleksey242424/tracker-server/blob/main/docs/assets/media/tracker.gif)
+## 🔧 Быстрый запуск
 
+### 1. Клонирование репозитория
+git clone https://github.com/Aleksey242424/tracker-server.git
+cd tracker-server
+### 2. Настройка переменных окружения
+Создайте файл .env на основе примера:
+cp .env.example .env
+### 3. Содержимое env файла
+DB_HOST=db
+DB_PORT=5432
+DB_NAME=tracker_db
+DB_USER=postgres
+DB_PASS=your_strong_password
+SECRET_KEY=your_secret_JWT_key
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
 
-Технологии:
-- Бэкенд: flask,psycopg2
-- База данных: Postgresql
-- Фронтенд: css,js
+🛠 Технические детали
+Модели базы данных
+User – пользователи системы (id, username, hashed_password)
 
-Установка:
-...
+Task – задачи (id, title, description, is_completed, user_id, created_at)
 
+Зависимости проекта
+Основные зависимости (полный список в requirements.txt):
+
+fastapi==0.104.1
+
+sqlalchemy==2.0.23
+
+psycopg2-binary==2.9.9
+
+python-jose[cryptography]==3.3.0
+
+passlib[bcrypt]==1.7.4
+
+python-dotenv==1.0.0
